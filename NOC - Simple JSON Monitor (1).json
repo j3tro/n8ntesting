@@ -1,0 +1,119 @@
+{
+  "name": "NOC - Simple JSON Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -240,
+        -288
+      ],
+      "id": "cc145153-cc25-4b49-b0d3-02f19b0a2f90",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        -384
+      ],
+      "id": "9be04380-b342-4b7a-95ea-6bdd837586ca",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nreturn [{\n  json: {\n    source: \"Binance\",\n    symbol: data.symbol,\n    price: Number(data.price),\n    currency: \"USDT\",\n    updated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -192
+      ],
+      "id": "af6fc961-29e0-4924-a951-ef919ec2933e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:9000/monitor-receiver.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $input.all().map(item => item.json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        512,
+        -304
+      ],
+      "id": "7d7615b4-a92f-485e-a191-219a3e4caac0",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "73259766-88e9-4935-9cc4-e3a3bcfad1fc",
+  "meta": {
+    "instanceId": "53be42c718a25d5fe735a72a7c86089efbe7d87d55c8455b7c4918ca8e926936"
+  },
+  "nodeGroups": [],
+  "id": "EQHEz9cDlKajQqRN",
+  "tags": []
+}

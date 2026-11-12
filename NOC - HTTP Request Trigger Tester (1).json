@@ -1,0 +1,232 @@
+{
+  "name": "NOC - HTTP Request Trigger Tester",
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "POST"
+        ],
+        "path": "noc-http-trigger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "75dcaeed-29be-4502-9de8-9c7c4c07e676",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -512,
+        64
+      ],
+      "webhookId": "43e12a1c-befd-4390-a611-8384a0b7ade1",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": false,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.message }}",
+              "operation": "isNotEmpty"
+            }
+          ],
+          "number": [
+            {
+              "value1": "={{ $json.body.message.length }}",
+              "value2": 5000
+            }
+          ]
+        }
+      },
+      "id": "67bcd653-a4a4-4ea6-a576-f707db3efa20",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://httpbin.org/get",
+        "sendQuery": true,
+        "specifyQuery": "=keypair",
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "ac2f2946-1401-43de-8e55-d13a57b452da",
+      "name": "HTTP GET Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        16,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "d07ce43b-6d4b-4421-9704-84061d358b6a",
+      "name": "HTTP POST Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        16,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "aa404998-b9a0-46b2-98c0-9a7b156de9bc",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        720,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst webhook = $('Webhook Trigger').first().json;\nconst input = webhook.body?.message ?? '';\n\nconst getResult = $('HTTP GET Request').first()?.json ?? null;\nconst postResult = $('HTTP POST Request').first()?.json ?? null;\n\nreturn [{\n  json: {\n    success: true,\n    input,\n\n    get_request: {\n      status: getResult ? 'success' : 'error',\n      response: getResult\n    },\n\n    post_request: {\n      status: postResult ? 'success' : 'error',\n      response: postResult\n    },\n\n    execution_time: new Date().toISOString()\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        112
+      ],
+      "id": "76ec0087-226c-4564-83d5-4b3a5c0e14f6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        336,
+        112
+      ],
+      "id": "a689c73d-dcb5-45ff-8257-73c1ca0a0a11",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "HTTP GET Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP POST Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP GET Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "186ad90e-2c63-4142-80a7-083227cde797",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "53be42c718a25d5fe735a72a7c86089efbe7d87d55c8455b7c4918ca8e926936"
+  },
+  "nodeGroups": [],
+  "id": "MaFpi1HTMOWfUEcu",
+  "tags": []
+}
