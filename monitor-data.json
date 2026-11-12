@@ -1,0 +1,70 @@
+{
+    "updated_at": "2026-11-12T17:01:43+01:00",
+    "count": 8,
+    "events": [
+        {
+            "id": "aka2026wlajid",
+            "magnitude": 3.2,
+            "location": "36 km SSW of Nanwalek, Alaska",
+            "time": "2026-11-12T15:43:54.833Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "aka2026wlafzk",
+            "magnitude": 1.7,
+            "location": "35 km NW of Chenega, Alaska",
+            "time": "2026-11-12T15:39:57.842Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "aka2026wladtr",
+            "magnitude": 0.4,
+            "location": "65 km ENE of Pedro Bay, Alaska",
+            "time": "2026-11-12T15:37:24.564Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "aka2026wkzvgs",
+            "magnitude": 0.6,
+            "location": "73 km WNW of Happy Valley, Alaska",
+            "time": "2026-11-12T15:27:32.966Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "nn00926915",
+            "magnitude": 2.14,
+            "location": "25 km E of Nellis Air Force Base, Nevada",
+            "time": "2026-11-12T15:20:48.146Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "aka2026wkzmac",
+            "magnitude": 2.2,
+            "location": "71 km WNW of Happy Valley, Alaska",
+            "time": "2026-11-12T15:16:52.131Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "nc75465762",
+            "magnitude": 1.02,
+            "location": "3 km NW of The Geysers, CA",
+            "time": "2026-11-12T15:03:15.670Z",
+            "alert": null,
+            "tsunami": 0
+        },
+        {
+            "id": "aka2026wkyzlw",
+            "magnitude": 1.6,
+            "location": "62 km WNW of Petersville, Alaska",
+            "time": "2026-11-12T15:02:24.161Z",
+            "alert": null,
+            "tsunami": 0
+        }
+    ]
+}

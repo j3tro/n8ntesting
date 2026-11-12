@@ -85,6 +85,38 @@
         .noc-json-expander-icon.rotated { transform: rotate(90deg); }
         .noc-submit-pending { opacity: 0.5; pointer-events: none; }
         @media (max-width: 640px) { .noc-textarea { min-height: 100px; } }
+
+        /* Continuous monitoring panel */
+        .monitor-panel {
+            margin-top: 1.5rem;
+            background: var(--noc-surface);
+            border: 1px solid var(--noc-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .monitor-stat {
+            background: var(--noc-bg);
+            border: 1px solid var(--noc-border);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        .monitor-event {
+            background: var(--noc-bg);
+            border: 1px solid var(--noc-border);
+            border-radius: 6px;
+            padding: 0.9rem 1rem;
+        }
+        .monitor-muted { color: var(--noc-text-muted); }
+        .monitor-pill {
+            display: inline-block;
+            border-radius: 4px;
+            padding: 3px 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--noc-accent-dim);
+            color: var(--noc-accent);
+        }
+
     </style>
 </head>
 <body class="noc-theme min-h-screen">
@@ -142,6 +174,35 @@
                 <button class="noc-btn noc-btn-secondary" type="button" onclick="clearInput()" title="Clear">Clear</button>
             </div>
         </div>
+
+        <!-- Continuous Monitoring Results -->
+        <section class="monitor-panel" aria-labelledby="monitor-title">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 id="monitor-title" class="text-lg font-semibold">Live Monitoring Results</h2>
+                    <p class="text-xs monitor-muted mt-1">Latest earthquake data received from your n8n workflow</p>
+                </div>
+                <span class="monitor-pill" id="monitor-connection">WAITING FOR DATA</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="monitor-stat">
+                    <div class="text-2xl font-semibold" id="monitor-count">0</div>
+                    <div class="text-xs monitor-muted">Records received</div>
+                </div>
+                <div class="monitor-stat">
+                    <div class="text-sm font-semibold" id="monitor-updated">Never</div>
+                    <div class="text-xs monitor-muted">Last update</div>
+                </div>
+            </div>
+
+            <div id="monitor-events" class="space-y-2">
+                <div class="monitor-event text-sm monitor-muted" id="monitor-empty">
+                    No monitoring data received yet. Execute your n8n workflow to send the first results.
+                </div>
+            </div>
+            <p class="text-xs monitor-muted mt-3">Dashboard refreshes every 3 seconds. n8n checks the source every 60 seconds.</p>
+        </section>
     </main>
     <script src="func.js"></script>
 </body>

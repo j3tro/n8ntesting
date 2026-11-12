@@ -701,3 +701,115 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+
+// ============================================================
+// CONTINUOUS MONITORING DASHBOARD
+// Reads the latest snapshot saved by monitor-receiver.php.
+// This is separate from the existing manual HTTP Trigger Tester.
+// ============================================================
+
+const MONITOR_DATA_URL = "monitor-data.php";
+const MONITOR_REFRESH_MS = 3000;
+
+function formatMonitorDate(value) {
+    if (!value) return "Never";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+        ? "Unknown"
+        : date.toLocaleString();
+}
+
+function renderMonitorEvents(events) {
+    const container = document.getElementById("monitor-events");
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!Array.isArray(events) || events.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "monitor-event text-sm monitor-muted";
+        empty.textContent = "No earthquake records in the latest snapshot.";
+        container.appendChild(empty);
+        return;
+    }
+
+    events.forEach((event) => {
+        const card = document.createElement("article");
+        card.className = "monitor-event";
+
+        const header = document.createElement("div");
+        header.className = "flex items-center justify-between gap-3 mb-1";
+
+        const magnitude = document.createElement("strong");
+        const mag = Number(event.magnitude);
+        magnitude.textContent = Number.isFinite(mag)
+            ? `Magnitude ${mag.toFixed(1)}`
+            : "Magnitude unavailable";
+
+        const tag = document.createElement("span");
+        tag.className = "monitor-pill";
+        tag.textContent = event.tsunami === 1 ? "TSUNAMI FLAG" : "EARTHQUAKE";
+
+        header.append(magnitude, tag);
+
+        const location = document.createElement("p");
+        location.className = "text-sm";
+        location.textContent = event.location || "Unknown location";
+
+        const details = document.createElement("p");
+        details.className = "text-xs monitor-muted mt-2";
+        details.textContent = `${formatMonitorDate(event.time)} · ID: ${event.id || "N/A"}`;
+
+        card.append(header, location, details);
+        container.appendChild(card);
+    });
+}
+
+async function refreshMonitorDashboard() {
+    const badge = document.getElementById("monitor-connection");
+
+    try {
+        const response = await fetch(`${MONITOR_DATA_URL}?_=${Date.now()}`, {
+            method: "GET",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Monitor endpoint returned HTTP ${response.status}`);
+        }
+
+        const snapshot = await response.json();
+
+        document.getElementById("monitor-count").textContent =
+            Number(snapshot.count || 0);
+
+        document.getElementById("monitor-updated").textContent =
+            formatMonitorDate(snapshot.updated_at);
+
+        renderMonitorEvents(snapshot.events || []);
+
+        if (badge) {
+            badge.textContent = snapshot.updated_at ? "RECEIVING DATA" : "WAITING FOR DATA";
+            badge.style.background = snapshot.updated_at
+                ? "var(--noc-accent-dim)"
+                : "var(--noc-border)";
+            badge.style.color = snapshot.updated_at
+                ? "var(--noc-accent)"
+                : "var(--noc-text-muted)";
+        }
+    } catch (error) {
+        console.error("Monitoring dashboard refresh failed:", error);
+        if (badge) {
+            badge.textContent = "CONNECTION ERROR";
+            badge.style.background = "rgba(255, 71, 87, 0.15)";
+            badge.style.color = "var(--noc-error)";
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    refreshMonitorDashboard();
+    window.setInterval(refreshMonitorDashboard, MONITOR_REFRESH_MS);
+});
