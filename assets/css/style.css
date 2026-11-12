@@ -1,0 +1,71 @@
+/**
+ * NOC HTTP Trigger - Custom Styles
+ * Additional Tailwind overrides and NOC-specific styling
+ */
+
+@layer base {
+    :root {
+        --noc-bg: #0a0a0f;
+        --noc-surface: #12121a;
+        --noc-border: #2a2a3a;
+        --noc-accent: #00d4aa;
+        --noc-accent-dim: #00d4aa3d;
+        --noc-error: #ff4757;
+        --noc-warning: #ffa502;
+        --noc-success: #00d4aa;
+        --noc-info: #38bdf8;
+        --noc-text: #e8e8f0;
+        --noc-text-muted: #71718a;
+    }
+}
+
+@layer components {
+    /* Custom button variants */
+    .btn-noc-primary {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium 
+               transition-colors focus-visible:outline-none focus-visible:ring-2 
+               focus-visible:ring-primary focus-visible:ring-offset-2;
+    }
+    
+    .btn-noc-primary--light {
+        @apply bg-primary-600 text-white hover:bg-primary-500;
+    }
+    
+    .btn-noc-primary--light:hover {
+        @apply bg-primary-500;
+    }
+    
+    .btn-noc-secondary {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium 
+               border border-gray-700 bg-gray-900 text-white hover:bg-gray-800;
+    }
+    
+    .btn-noc-danger {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium 
+               text-red-400 hover:bg-red-900/20;
+    }
+    
+    /* Textarea custom */
+    .textarea-noc {
+        @apply w-full bg-gray-900 border border-gray-700 rounded-md p-2 
+               text-sm text-white resize-v min-h-[120px] focus:outline-none 
+               focus:border-primary focus:ring-primary/20;
+    }
+    
+    /* Status badge */
+    .status-badge {
+        @apply inline-flex items-center gap-2 rounded-full px-2 py-1 text-xs font-medium;
+    }
+    
+    .status-success {
+        @apply bg-green-900/20 text-green-400;
+    }
+    
+    .status-error {
+        @apply bg-red-900/20 text-red-400;
+    }
+    
+    .status-pending {
+        @apply bg-gray-800 text-gray-500;
+    }
+}
